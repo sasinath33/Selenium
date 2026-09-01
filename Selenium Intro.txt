@@ -1,0 +1,680 @@
+Selenium
+==========
+Automation
+
+Definition:
+
+Performing any task using a tool or machine is called automation.
+
+Advantages of Automation
+Saves time.
+
+Faster execution.
+
+Requires less manual effort.
+
+Can work continuously (restless/24×7 operation).
+
+Provides higher accuracy.
+
+Supports multitasking.
+
+Requires fewer human resources.
+
+Disadvantages of Automation
+High initial investment.
+
+Requires constant maintenance.
+
+Requires additional technical skills.
+
+Automation Testing
+Definition:
+
+Testing an application using automation tools is called automation testing.
+
+Automation Tool
+Definition:
+
+A software application used to automate tasks or applications.
+
+Examples:
+
+Selenium
+
+Playwright
+
+Cypress
+
+TestComplete
+
+Selenium
+Definition:
+
+Selenium is a free and open-source automation tool used to automate web-based applications.
+
+It is mainly used for:
+
+Web application testing
+
+Browser automation
+
+Functional testing
+
+Regression testing
+
+Examples of Web Applications
+Gmail
+
+Facebook
+
+Flipkart
+
+Amazon
+
+Instagram
+
+Advantages of Selenium
+It is free and open source.
+
+No license is required for commercial use.
+
+Its source code is publicly available.
+
+Supports automation of web-based applications.
+
+Supports multiple programming languages.
+
+Supports multiple operating systems.
+
+Supports almost all major browsers.
+
+Selenium Supports
+Programming Languages
+Java
+
+Python
+
+C#
+
+JavaScript
+
+Ruby
+
+Kotlin
+
+PHP
+
+Perl
+
+and others
+
+Operating Systems
+Windows
+
+macOS
+
+Linux
+
+Browsers
+Chrome
+
+Firefox
+
+Edge
+
+Safari
+
+Opera (limited support in recent versions)
+
+WebDriver Methods
+Method
+
+Purpose
+
+get()
+
+Opens a URL
+
+getTitle()
+
+Gets the title of the current webpage
+
+getCurrentUrl()
+
+Gets the current webpage URL
+
+getPageSource()
+
+Gets the HTML source code
+
+findElement()
+
+Finds a single web element
+
+findElements()
+
+Finds multiple web elements
+
+getWindowHandle()
+
+Gets the ID of the parent/current window
+
+getWindowHandles()
+
+Gets IDs of all opened windows
+
+switchTo()
+
+Switches between windows, frames, or alerts
+
+manage()
+
+Used for window and cookie management
+
+navigate()
+
+Navigation operations
+
+close()
+
+Closes the current browser window
+
+quit()
+
+Closes all browser windows opened by Selenium
+
+get()
+Used to open a webpage.
+
+driver.get("https://www.google.com");
+getTitle()
+Returns the title of the current webpage.
+
+String title = driver.getTitle();
+getCurrentUrl()
+Returns the current webpage URL.
+
+String url = driver.getCurrentUrl();
+getPageSource()
+Returns the HTML source code of the webpage.
+
+String source = driver.getPageSource();
+findElement()
+Used to locate a single element.
+
+WebElement element = driver.findElement(By.id("username"));
+Important Points
+Return type: WebElement
+
+Throws NoSuchElementException if no element is found.
+
+If multiple elements match, it returns the first matching element.
+
+findElements()
+Used to locate multiple elements.
+
+List<WebElement> elements = driver.findElements(By.tagName("a"));
+Important Points
+Return type: List<WebElement>
+
+Returns an empty list if no elements are found.
+
+Returns all matching elements.
+
+Window Handling Methods
+getWindowHandle()
+Returns the current window ID.
+
+driver.getWindowHandle();
+getWindowHandles()
+Returns IDs of all opened windows.
+
+driver.getWindowHandles();
+switchTo()
+Used for:
+
+Window switching
+
+Frame switching
+
+Alert handling
+
+driver.switchTo().window(windowID);
+manage()
+Used for:
+
+Window management
+
+Cookie management
+
+Examples:
+
+driver.manage().window().maximize();
+driver.manage().deleteAllCookies();
+navigate()
+Used for:
+
+Open URL
+
+Go back
+
+Go forward
+
+Refresh page
+
+Examples:
+
+driver.navigate().to("https://www.google.com");
+driver.navigate().back();
+driver.navigate().forward();
+driver.navigate().refresh();
+close()
+Closes the current browser window.
+
+driver.close();
+quit()
+Closes all browser windows opened by Selenium.
+
+driver.quit();
+Locators in Selenium
+Definition
+Locators are static methods used to identify web elements on a webpage.
+
+They are present in the By class.
+
+All locator methods accept a String argument.
+
+Types of Locators
+id()
+
+name()
+
+className()
+
+tagName()
+
+linkText()
+
+partialLinkText()
+
+cssSelector()
+
+xpath()
+
+ID Locator
+driver.findElement(By.id("username"));
+Used when an element has an id attribute.
+
+Example:
+
+<input id="username">
+Name Locator
+driver.findElement(By.name("email"));
+Example:
+
+<input name="email">
+Class Name Locator
+driver.findElement(By.className("login"));
+Example:
+
+<input class="login">
+Tag Name Locator
+driver.findElement(By.tagName("input"));
+Example:
+
+<input>
+Link Text Locator
+Used for hyperlinks.
+
+driver.findElement(By.linkText("Login"));
+Example:
+
+<a>Login</a>
+Partial Link Text Locator
+Used when only part of the hyperlink text is known.
+
+driver.findElement(By.partialLinkText("Log"));
+Example:
+
+<a>Login Account</a>
+CSS Selector
+Used to identify elements using CSS syntax.
+
+driver.findElement(By.cssSelector("#username"));
+Examples:
+
+#username
+.login
+XPath
+XPath is used to locate elements in an HTML document.
+
+Two types:
+
+Absolute XPath
+
+Relative XPath
+
+Absolute XPath
+Definition
+Complete path of an element from the root (html) of the webpage.
+
+Represented using a single slash (/).
+
+Example
+/html/body/div[1]/input[2]
+Characteristics
+Long and difficult to maintain.
+
+Breaks easily if the page structure changes.
+
+Generally not recommended.
+
+Relative XPath
+Definition
+Path of an element from anywhere in the webpage.
+
+Represented using double slash (//).
+
+Advantages
+Short.
+
+Flexible.
+
+Easy to maintain.
+
+Most commonly used.
+
+Relative XPath Syntax
+1. All Matching Elements
+//tagName
+Example:
+
+//input
+Returns all input elements.
+
+2. First Matching Element
+(//tagName)[1]
+Example:
+
+(//input)[1]
+Returns the first matching element.
+
+3. Last Matching Element
+(//tagName)[last()]
+Example:
+
+(//input)[last()]
+Returns the last matching element.
+
+4. All Elements
+//*
+Returns all elements present on the webpage.
+
+5. Any Tag with Attribute
+//*[@attribute='value']
+Example:
+
+//*[@id='email']
+6. Specific Tag with Attribute
+//tagName[@attribute='value']
+Example:
+
+//input[@id='email']
+Summary
+Topic
+
+Description
+
+Automation
+
+Performing tasks using tools or machines
+
+Automation Testing
+
+Testing applications using automation tools
+
+Selenium
+
+Web automation tool
+
+WebDriver
+
+Controls browser operations
+
+Locators
+
+Used to identify web elements
+
+findElement()
+
+Finds one element
+
+findElements()
+
+Finds multiple elements
+
+Absolute XPath
+
+Complete path from HTML root
+
+Relative XPath
+
+Flexible and commonly used XPath
+
+XPath
+
+Used to locate webpage elements
+
+manage()
+
+Window and cookie operations
+
+navigate()
+
+URL navigation operations
+
+close()
+
+Closes current browser window
+
+quit()
+
+Closes all browser windows
+
+
+
+Java Code
+Fullscreen
+package file;
+
+import java.io.File;
+
+import java.io.FileReader;
+
+import java.io.FileWriter;
+
+import java.io.IOException;
+
+public class FileDemo {
+
+public static void main(String[] args) throws IOException {
+
+String path = "C:\\Users\\LAPTOP\\OneDrive\\Desktop\\Java\\Java_Selenium_2PM\\src\\file\\test1";
+
+fileWrite(path);
+
+fileread(path);
+
+}
+
+public static void fileWrite(String path) throws IOException {
+
+File f = new File(path);
+
+FileWriter fw = new FileWriter(f);
+
+fw.write("Hello students ");
+
+fw.close();
+
+}
+
+public static void fileread(String path) throws IOException {
+
+File f = new File(path);
+
+FileReader fr = new FileReader(f);
+
+int temp = 0;
+
+while ((temp = fr.read()) != -1) {
+
+System.out.print((char) temp);
+
+}
+
+}
+
+}
+
+===========================================
+
+
+
+package demo;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class FirstAutomation {
+
+public static void main(String[] args) throws InterruptedException {
+
+WebDriver driver = new ChromeDriver();
+
+driver.manage().window().maximize();
+
+driver.get("https://www.facebook.com/");
+
+System.out.println("Facebook success");
+
+driver.get("https://www.google.com");
+
+System.out.println("Google launched");
+
+// WebDriver Methods
+
+System.out.println(driver.getCurrentUrl());
+
+System.out.println(driver.getTitle());
+
+String windowHandle = driver.getWindowHandle();
+
+System.out.println(windowHandle);
+
+driver.navigate().back();
+
+driver.navigate().forward();
+
+driver.navigate().refresh();
+
+driver.navigate().to("https://testautomationpractice.blogspot.com/");
+
+Thread.sleep(2000);
+
+driver.get("https://www.facebook.com");
+
+driver.findElement(By.id("_R_1h6kqsqppb6amH1_")).sendKeys("techpanda@gmail.com");
+
+driver.findElement(By.name("pass")).sendKeys("12345678");
+
+driver.get("https://www.google.com");
+
+driver.findElement(By.name("q")).sendKeys("selenium");
+
+
+//driver.findElement(By.linkText("About")).click();
+
+
+driver.findElement(By.partialLinkText("Ab")).click();
+
+driver.quit();
+
+// driver = new EdgeDriver();
+
+// driver.get("https://www.facebook.com/");
+
+// System.out.println("Edge success");
+
+//
+
+// driver = new FirefoxDriver();
+
+// driver.get("https://www.facebook.com/");
+
+// System.out.println("Firefox success");
+
+// WebDriver driver = new InternetExplorerDriver();
+
+// driver.get("https://www.facebook.com/");
+
+// System.out.println("IE success");
+
+}
+
+}
+
+=====================================
+
+
+
+package demo;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class TestAutomation {
+
+
+public static void main(String[] args) {
+
+
+WebDriver driver=new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+driver.manage().window().maximize();
+
+
+driver.findElement(By.linkText("Home")).click();
+
+driver.findElement(By.className("form-control")).sendKeys("Techpanda");
+
+driver.findElement(By.id("email")).sendKeys("techpanda@gmail.com");
+
+driver.findElement(By.id("phone")).sendKeys("987654321");
+
+driver.findElement(By.tagName("textarea")).sendKeys("chennai");
+
+
+driver.findElement(By.name("gender")).click();
+
+
+driver.findElement(By.partialLinkText("Courses")).click();
+
+
+System.out.println(driver.getCurrentUrl() " " driver.getTitle());
+
+driver.quit();
+
+}
+
+}
+
