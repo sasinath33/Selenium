@@ -1,0 +1,211 @@
+Java Code
+===========
+package demo;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class FaceBookLogin {
+
+public static void main(String[] args) {
+
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://www.facebook.com");
+
+
+Methods(driver);
+
+//driver.findElement(By.id("_R_1h6kqsqppb6amH1_")).sendKeys("techpanda@gmail.com");
+
+//driver.findElement(By.xpath("//*[@id=\"_R_1h6kqsqppb6amH1_\"]")).sendKeys("tp@gmail.com");
+
+
+
+
+// driver.findElement(By.xpath("\r\n"
+
+// + "/html/body/div[1]/div/div/div/div/div/div/div[1]/div/div/div/div[1]/div/div[3]/div/div/div/div/div/div/div/div/div[2]/form/div/div[1]/div/div[1]/div/div/div[1]/input")).sendKeys("tp@gmail.com");
+
+//
+
+// WebElement element = driver.findElement(By.xpath("//input[@name='email']"));
+
+// element.sendKeys("tp@gmail.com");
+
+//
+
+// System.out.println(element.getAttribute("name"));
+
+// driver.findElement(By.name("pass")).sendKeys("12345678");
+
+// driver.findElement(By.xpath("//*[@id=\"login_form\"]/div/div[1]/div/div[3]/div/div/div")).click();
+
+//
+
+}
+
+private static void Methods(WebDriver driver) {
+
+// TODO Auto-generated method stub
+
+driver.manage().window().maximize();
+
+driver.findElement(By.name("email")).sendKeys("12345");
+
+driver.findElement(By.id("_R_1hmkqsqppb6amH1_")).sendKeys("12345");
+
+driver.findElement(By.xpath("//div[@role='button' and @aria-label='Log in']")).click();
+
+//driver.findElement(By.xpath("//span[text(),'forgetten password']")).click();
+
+
+//driver.findElement(By.xpath("//span[contains(text(),'Forgotten password?')]")).click();
+
+
+//driver.findElement(By.cssSelector("div[role='button']")).click();
+
+
+
+}
+
+}
+
+=============================================================================================
+
+
+
+package demo;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class TestAutomation1 {
+
+
+public static void main(String[] args) {
+
+
+WebDriver driver=new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+driver.manage().window().maximize();
+
+
+WebElement element = driver.findElement(By.cssSelector(".form-control"));
+
+element.sendKeys("TP");
+
+driver.findElement(By.id("email")).sendKeys("techpanda@gmail.com");
+
+driver.findElement(By.id("phone")).sendKeys("987654321");
+
+WebElement element2 = driver.findElement(By.tagName("textarea"));
+
+element2.sendKeys("chennai");
+
+WebElement element3 = driver.findElement(By.name("gender"));
+
+element3.click();
+
+
+// element.clear();
+
+element.sendKeys("Techpanda");
+
+System.out.println(element.getCssValue("color"));
+
+System.out.println(element.getCssValue("background-color"));
+
+System.out.println(element2.getTagName());
+
+System.out.println(element2.getLocation());
+
+System.out.println(element.getSize());
+
+System.out.println(element.isDisplayed());
+
+
+System.out.println(element3.isSelected());
+
+
+
+
+System.out.println(driver.getCurrentUrl()+" "+driver.getTitle());
+
+driver.quit();
+
+}
+
+}
+
+===============================================================================================
+
+
+
+package day23;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class CSSLocators {
+
+public static void main(String[] args) {
+
+
+WebDriver driver=new ChromeDriver();
+
+driver.get("https://demo.nopcommerce.com/");
+
+driver.manage().window().maximize(); // maximize the browser window
+
+
+
+//tag id tag#id
+
+//driver.findElement(By.cssSelector("input#small-searchterms")).sendKeys("T-shirts");
+
+//driver.findElement(By.cssSelector("#small-searchterms")).sendKeys("T-shirts");
+
+
+//tag class tag.classname
+
+//driver.findElement(By.cssSelector("input.search-box-text")).sendKeys("T-shirts");
+
+//driver.findElement(By.cssSelector(".search-box-text")).sendKeys("T-shirts");
+
+
+
+//tag attribute tag[attribute='value']
+
+//driver.findElement(By.cssSelector("input[placeholder='Search store']")).sendKeys("T-Shirts");
+
+//driver.findElement(By.cssSelector("[placeholder='Search store']")).sendKeys("T-Shirts");
+
+
+//tag class attribute
+
+// driver.findElement(By.cssSelector("input.search-box-text[name='q']")).sendKeys("T-Shirts");
+
+driver.findElement(By.cssSelector(".search-box-text[name='q']")).sendKeys("T-Shirts");
+
+}
+
+}
+
+
+
