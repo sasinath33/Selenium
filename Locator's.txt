@@ -1,0 +1,335 @@
+Locators - Xpath
+=================
+Selenium
+
+------
+
+Selenium IDE
+
+Selenium RC
+
+Selenium Webdriver
+
+Selenium Grid
+
+----------
+
+Selenium Webdriver --> Automate the Web Application
+
+----------------
+
+Java --> ChromeDriver --> Chrome
+
+----------------
+
+Maven Project
+
+--------
+
+Eclipse --> new --> maven project --> group id artifical id --> finish
+
+------------------
+
+POM.xml
+
+------
+
+POM --> Project Object Model
+
+-------
+
+example program:
+
+------------
+
+public class Demo{
+
+public static void main(String args[]){
+
+
+WebDriverManager.chromedriver.setup();
+
+WebDriver driver =new ChromeDriver();
+
+driver.get("url");
+
+
+// getTitle, pageSource()
+
+}
+
+}
+
+---------------------------
+
+Locators:
+
+-------
+
+1. id
+
+2.name
+
+3. tag name
+
+4. link text
+
+5. partial link text
+
+6. classname
+
+7. xpath
+
+8. css selector
+
+-------------------
+
+1. id --> unique
+
+2. name --> unique
+
+----
+
+3. tagname, classname --> xpath
+
+------------
+
+4. link text -->
+
+5. parial link text -->
+
+-----------------------
+
+Customized Locators:
+
+---------------
+
+1. xpath
+
+2. cssSelectors
+
+---------------
+
+1. Xpath
+
+------
+
+1. Absolute xpath
+
+2. Relative xpath
+
+1. Absolute xpath
+
+------------
+
+/html/body/div[1]/div[1]/div[1]/div/div/div/div[2]/div/div[1]/form/div[1]/div[1]/input --> front end (root)
+
+<html>
+
+<head>
+
+<title>------</title>
+
+</head>]
+
+<body>
+
+<div>
+
+<p>
+
+<a>
+
+</body>
+
+</html>
+
+disadvantage:
+
+--------
+
+1. it very length
+
+2. developer any change --> path collapse
+
+----------
+
+2. Relative xpath
+
+--------------
+
+//*[@id="email"]
+
+easy search so fast
+
+--------
+
+xpath Method
+
+--------
+
+1. use Attribute name and value
+
+Syntax:
+
+//tagName[@attributeName='attributeValue']
+
+
+WebElement element = driver.findElement(By.xpath("//input[@type='text']"));
+
+element.sendKeys("hello@gmail.com");
+
+------------------------------
+
+2. using text() method
+
+syntax:
+
+//tagName[text()='visibleText']
+
+driver.findElement(By.xpath("//a[text()=\"Forgotten password?\"]")).click();
+
+------------------------------------
+
+3. contains method
+
+syntax:
+
+//tagName[contains(@attributename,'attributeValue')]
+
+driver.findElement(By.xpath("//input[contains(@id,'e')]")).sendKeys("hello@gmail.com");
+
+//tagName[contains(text(),'VisibleText')]
+
+-------------------------------
+
+4. starts-with method
+
+//tagName[starts-with(@attributename,'attributeValue')]
+
+//tagName[contains(text(),'visibleText')]
+
+--------------------------
+
+5. And operator or operator
+
+// tagName[@attname='attvalue or @attname='attValue']
+
+// tagName[@attname='attvalue and @attname='attValue']
+
+----------------------
+
+6. normalize space()
+
+//tagName[normalize-space()='visibleText']
+
+--------------------------
+
+Code:
+
+package locators;
+
+import java.util.List;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.Keys;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.support.ui.Select;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class LocatorsDemo {
+
+public static void main(String[] args) throws InterruptedException {
+
+// TODO Auto-generated method stub
+
+WebDriverManager.chromedriver().setup();
+
+ChromeDriver driver = new ChromeDriver();
+
+// Get string
+
+driver.get("https://www.google.com");
+
+// Get Title and url
+
+System.out.println(driver.getTitle());
+
+System.out.println(driver.getCurrentUrl());
+
+// WebElement element = driver.findElement(By.id("APjFqb"));
+
+// element.sendKeys("Elon musk");
+
+// element.sendKeys(Keys.ENTER);
+
+// element.click();
+
+//
+
+// Thread.sleep(30);
+
+driver.findElement(By.linkText("Gmail")).click();
+
+driver.get("https://www.google.com");
+
+driver.findElement(By.xpath("//a[@class=\"MV3Tnb\"][2]")).click();
+
+
+driver.get("https://www.google.com");
+
+driver.findElement(By.xpath("//a[text()=\"Images\"]"));
+
+
+driver.get("https://www.youtube.com/");
+
+WebElement element = driver.findElement(By.xpath("//link[@type=\"image/x-icon\"]"));
+
+System.out.println(element);
+
+driver.get("https://www.facebook.com/");
+
+Thread.sleep(1000);
+
+driver.findElement(By.name("email")).sendKeys("hello@gmail.com");
+
+driver.findElement(By.name("pass")).sendKeys("12345");
+
+driver.findElement(By.tagName("button")).click();
+
+driver.findElement(By.linkText("Forgotten password?")).click();
+
+System.out.println("Thanks");
+
+driver.get("https://www.leetcode.com/");
+
+driver.findElement(By.xpath("//span[text()='Sign in']")).click();
+
+Thread.sleep(1000);
+
+driver.findElement(By.id("id_login")).sendKeys("rajii@gmail.com");
+
+driver.findElement(By.name("password")).sendKeys("123456789");
+
+Thread.sleep(10000);
+
+System.out.println("Success challenge completed");
+
+Thread.sleep(10000);
+
+driver.findElement(By.xpath("//span[text()='Sign In']")).click();
+
+System.out.println("Thanking You");
+
+driver.quit();
+
+}
+
+}
+
