@@ -1,0 +1,322 @@
+WebTable Code
+==============
+package demo;
+
+import java.util.Arrays;
+
+import java.util.List;
+
+import org.openqa.selenium.Alert;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.support.ui.Select;
+
+public class TestAutomationPractingWebsite {
+
+public static void main(String[] args) throws InterruptedException {
+
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+int row = driver.findElements(By.xpath("//tbody[@id='rows']/tr")).size();
+
+int col = driver.findElements(By.xpath("//tbody[@id='rows']/tr[2]/td")).size();
+
+for (int i = 1; i <= row; i++) {
+
+for (int j = 1; j <= col; j++) {
+
+String front = "//tbody[@id='rows']/tr[";
+
+String mid = "]/td[";
+
+String end = "]";
+
+WebElement element = driver.findElement(By.xpath(front + i + mid + j + end));
+
+System.out.print(element.getText() + " ");
+
+}
+
+System.out.println();
+
+}
+
+System.out.println("Success");
+
+driver.quit();
+
+}
+
+private static void table1(WebDriver driver) {
+
+List<WebElement> elements = driver.findElements(By.xpath("//table[@name=\"BookTable\"]/tbody/tr/th"));
+
+int col = elements.size();
+
+int row = driver.findElements(By.xpath("//table[@name='BookTable']/tbody/tr")).size();
+
+System.out.println(row + " " + col);
+
+for (int i = 1; i <= row; i++) {
+
+for (int j = 1; j <= col; j++) {
+
+if (i == 1) {
+
+WebElement element = driver
+
+.findElement(By.xpath("//table[@name=\"BookTable\"]/tbody/tr[" + i + "]/th[" + j + "]"));
+
+System.out.print(element.getText() + " ");
+
+} else {
+
+WebElement element = driver
+
+.findElement(By.xpath("//table[@name=\"BookTable\"]/tbody/tr[" + i + "]/td[" + j + "]"));
+
+System.out.print(element.getText() + " ");
+
+}
+
+}
+
+System.out.println();
+
+}
+
+for (int i = 2; i <= 7; i++) {
+
+WebElement element3 = driver.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[" + i + "]/td[3]"));
+
+if (element3.getText().startsWith("S")) {
+
+WebElement element4 = driver
+
+.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[" + i + "]/td[2]"));
+
+System.out.println(element4.getText() + " -> " + element3.getText());
+
+}
+
+}
+
+String arr[][] = new String[row][col];
+
+for (int i = 0; i < row; i++) {
+
+for (int j = 0; j < col; j++) {
+
+if (i == 0) {
+
+WebElement element = driver.findElement(
+
+By.xpath("//table[@name=\"BookTable\"]/tbody/tr[" + (i + 1) + "]/th[" + (j + 1) + "]"));
+
+arr[i][j] = element.getText();
+
+} else {
+
+WebElement element = driver.findElement(
+
+By.xpath("//table[@name=\"BookTable\"]/tbody/tr[" + (i + 1) + "]/td[" + (j + 1) + "]"));
+
+arr[i][j] = element.getText();
+
+}
+
+}
+
+}
+
+System.out.println(Arrays.deepToString(arr));
+
+WebElement element = driver.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[3]/td[2]"));
+
+System.out.println(element.getText());
+
+WebElement element2 = driver.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[6]/td[3]"));
+
+System.out.println(element2.getText());
+
+for (int i = 2; i <= 7; i++) {
+
+WebElement element3 = driver.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[" + i + "]/td[4]"));
+
+int price = Integer.parseInt(element3.getText());
+
+if (price < 500) {
+
+// System.out.println(element3.getText());
+
+WebElement element4 = driver
+
+.findElement(By.xpath("//table[@name='BookTable']/tbody/tr[" + i + "]/td[1]"));
+
+System.out.println(element4.getText() + " -> " + element3.getText());
+
+}
+
+}
+
+}
+
+private static void firstSetUp(WebDriver driver) {
+
+driver.findElement(By.id("name")).sendKeys("techpanda");
+
+driver.findElement(By.id("email")).sendKeys("techpanda@gmail.com");
+
+driver.findElement(By.id("phone")).sendKeys("8907654321");
+
+driver.findElement(By.id("textarea")).sendKeys("chennai");
+
+List<WebElement> gender = driver.findElements(By.xpath("//input[@name='gender']"));
+
+gender.get(1).click();
+
+for (WebElement e : gender) {
+
+System.out.println(e.isSelected());
+
+}
+
+List<WebElement> days = driver
+
+.findElements(By.xpath("//input[@type='checkbox' and @class='form-check-input']"));
+
+for (int i = 0; i < days.size(); i++) {
+
+if (i % 2 == 0) {
+
+days.get(i).click();
+
+}
+
+if (days.get(i).isSelected()) {
+
+System.out.println(days.get(i).getAttribute("value"));
+
+}
+
+}
+
+System.out.println("=============================================");
+
+/*
+
+* <select id="country, class=...> * <option value="India">India</option>
+
+* <option value="India">India</option> </select>
+
+*/
+
+WebElement country = driver.findElement(By.id("country"));
+
+Select s = new Select(country);
+
+s.selectByIndex(3); // starts from zero
+
+System.out.println(s.getAllSelectedOptions().get(0).getText());
+
+s.selectByValue("usa");
+
+s.selectByContainsVisibleText("Can");
+
+s.selectByVisibleText("Australia");
+
+List<WebElement> options = s.getOptions();
+
+System.out.println(options.size());
+
+for (WebElement e : options) {
+
+System.out.println(e.getText());
+
+}
+
+System.out.println("=============================================");
+
+WebElement colors = driver.findElement(By.id("colors"));
+
+s = new Select(colors);
+
+options = s.getOptions();
+
+System.out.println(options.size());
+
+for (WebElement e : options) {
+
+System.out.println(e.getText());
+
+}
+
+s.selectByValue("red");
+
+System.out.println("=============================================");
+
+driver.findElement(By.id("singleFileInput")).sendKeys("C:\\Users\\LAPTOP\\OneDrive\\Documents\\Selenium.docx");
+
+driver.findElement(By.xpath("(//button[@type='submit'])[1]")).click();
+
+String text = driver.findElement(By.id("singleFileStatus")).getText();
+
+System.out.println(text);
+
+System.out.println("=============================================");
+
+WebElement element = driver.findElement(By.id("multipleFilesInput"));
+
+element.sendKeys("C:\\Users\\LAPTOP\\OneDrive\\Documents\\Selenium.docx");
+
+element.sendKeys("C:\\Users\\LAPTOP\\Downloads\\Java_IO_Streams_Java8_Selenium_Study_Notes.pdf");
+
+driver.findElement(By.xpath("(//button[@type='submit'])[2]")).click();
+
+text = driver.findElement(By.id("multipleFilesStatus")).getText();
+
+System.out.println(text);
+
+System.out.println("=========================================");
+
+driver.findElement(By.id("alertBtn")).click();
+
+Alert a = driver.switchTo().alert();
+
+a.accept();
+
+driver.findElement(By.id("confirmBtn")).click();
+
+a.dismiss();
+
+driver.findElement(By.id("promptBtn")).click();
+
+a.sendKeys("Techpanda");
+
+a.accept();
+
+String text2 = driver.findElement(By.id("demo")).getText();
+
+System.out.println(text2);
+
+System.out.println("Alert finished");
+
+System.out.println("====================================");
+
+WebElement element2 = driver.findElement(By.name("start"));
+
+element2.click();
+
+}
+
+}
+
