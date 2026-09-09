@@ -1,0 +1,124 @@
+WindowsHandling.java
+====================
+package demo;
+
+import java.time.Duration;
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+import java.util.Set;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class WindowHandling {
+
+public static void main(String[] args) throws InterruptedException {
+
+// common codes for every program
+
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+driver.manage().window().maximize();
+
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+// Enter the words in the search button
+
+driver.findElement(By.xpath("(//input[@type='text'])[6]")).sendKeys("picture");
+
+driver.findElement(By.xpath("//input[@type='submit']")).click();
+
+// collecting result links
+
+List<WebElement> elements = driver.findElements(By.xpath("//div[starts-with(@id,'w')]/a"));
+
+System.out.println(elements.size());
+
+// only for printing
+
+for (WebElement e : elements) {
+
+System.out.println(e.getText());
+
+}
+
+// open all the link
+
+for (WebElement e : elements) {
+
+e.click();
+
+System.out.println(driver.getCurrentUrl() + " " + driver.getTitle());
+
+}
+
+System.out.println("=======================================");
+
+Set<String> windowHandles = driver.getWindowHandles();
+
+for (String s : windowHandles) {
+
+driver.switchTo().window(s);
+
+if (driver.getCurrentUrl().endsWith("book")) {
+
+driver.findElement(By.xpath("//img[@id='mwCQ']")).click();
+
+} else {
+
+System.out.println(driver.getCurrentUrl() + " " + driver.getTitle());
+
+}
+
+}
+
+List<String> list = new ArrayList<>(windowHandles);
+
+for (int i = 0; i < list.size(); i++) {
+
+driver.switchTo().window(list.get(i));
+
+System.out.println(driver.getCurrentUrl() + " " + driver.getTitle());
+
+// driver.findElement(By.xpath("(//input[@type='radio'])[8]")).click();
+
+// Thread.sleep(2000);
+
+}
+
+// again parent website
+
+driver.switchTo().window(list.get(0));
+
+driver.findElement(By.id("name")).sendKeys("Techpanda");
+
+driver.findElement(By.id("input1")).sendKeys("Chennai");
+
+
+
+
+driver.findElement(By.xpath("(//button)[4]")).click();
+
+
+Thread.sleep(4000);
+
+
+driver.findElement(By.xpath("(//button)[4]")).click();
+
+// driver.quit();
+
+System.out.println("Completed");
+
+}
+
+}
