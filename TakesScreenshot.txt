@@ -1,0 +1,79 @@
+Screenshot
+============
+
+
+package demo;
+
+import java.io.File;
+
+import java.io.IOException;
+
+import java.time.LocalDate;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.OutputType;
+
+import org.openqa.selenium.TakesScreenshot;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.io.FileHandler;
+
+public class Screenshot {
+
+public static void main(String[] args) throws IOException {
+
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+String path = System.getProperty("user.dir");
+
+screenshotMethod(driver, path, "FullChrome");
+
+WebElement element = driver.findElement(By.name("start"));
+
+screenshotMethod(element, path, "button");
+
+}
+
+public static void screenshotMethod(WebElement element, String path, String name) throws IOException {
+
+TakesScreenshot screen = (TakesScreenshot) element;
+
+File screenshotAs = screen.getScreenshotAs(OutputType.FILE);
+
+String image = path + "\\target\\screenshot\\" + name + "_" + LocalDate.now() + "_" + System.currentTimeMillis()
+
++ ".png";
+
+File f = new File(image);
+
+FileHandler.copy(screenshotAs, f);
+
+}
+
+public static void screenshotMethod(WebDriver driver, String path, String name) throws IOException {
+
+TakesScreenshot screen = (TakesScreenshot) driver;
+
+File screenshotAs = screen.getScreenshotAs(OutputType.FILE);
+
+String image = path + "\\target\\screenshot\\" + name + "_" + LocalDate.now() + "_" + System.currentTimeMillis()
+
++ ".png";
+
+File f = new File(image);
+
+FileHandler.copy(screenshotAs, f);
+
+}
+
+}
+
+==================================================================================================================
