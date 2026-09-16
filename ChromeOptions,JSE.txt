@@ -1,0 +1,751 @@
+CHROMEOPTIONS
+==============
+
+ChromeOptions allows you to configure Chrome before starting the browser.
+
+Import:
+
+import org.openqa.selenium.chrome.ChromeOptions;
+
+Basic example:
+
+ChromeOptions options = new ChromeOptions();
+
+ 
+
+WebDriver driver = new ChromeDriver(options);
+
+Why use ChromeOptions?
+=====================
+ChromeOptions can configure:
+
+Headless execution
+
+Browser arguments
+
+Extensions
+
+Downloads
+
+Notifications
+
+Certificate handling
+
+Window behavior
+
+Experimental options
+
+Browser capabilities
+
+HEADLESS MODE
+====================
+Headless means Chrome runs without displaying the browser UI.
+
+ChromeOptions options = new ChromeOptions();
+
+ 
+
+options.addArguments("--headless=new");
+
+ 
+
+WebDriver driver = new ChromeDriver(options);
+
+Useful for:
+
+CI/CD
+
+Jenkins
+
+Docker
+
+GitHub Actions
+
+Server environments
+
+WINDOW SIZE
+============
+options.addArguments("--window-size=1920,1080");
+
+Useful in headless execution because viewport dimensions can affect responsive layouts.
+
+START MAXIMIZED
+================
+options.addArguments("--start-maximized");
+
+However, for reliable cross-environment tests, explicitly controlling the viewport/window size can be more predictable.
+
+DISABLE NOTIFICATIONS
+======================
+options.addArguments("--disable-notifications");
+
+Useful when browser notification popups interfere with tests.
+
+INCOGNITO
+==========
+options.addArguments("--incognito");
+
+Starts Chrome in incognito mode.
+
+IGNORE CERTIFICATE ERRORS
+==========================
+options.addArguments("--ignore-certificate-errors");
+
+Can be useful in controlled test environments with test certificates.
+
+Do not blindly use this in security-sensitive production validation.
+
+DOWNLOAD PREFERENCES
+=====================
+You can configure Chrome preferences.
+
+Example:
+
+Map<String, Object> map = new HashMap<>();
+
+ 
+
+map.put("download.default_directory",
+
+        "C:\\Downloads");
+
+ 
+
+options.setExperimentalOption("prefs", map);
+
+Another example:
+
+prefs.put("download.prompt_for_download", false);
+
+Complete:
+
+ChromeOptions options = new ChromeOptions();
+
+ 
+
+Map<String, Object> prefs = new HashMap<>();
+
+ 
+
+prefs.put("download.default_directory",
+
+        "C:\\Downloads");
+
+ 
+
+prefs.put("download.prompt_for_download", false);
+
+ 
+
+options.setExperimentalOption("prefs", prefs);
+
+ 
+
+WebDriver driver = new ChromeDriver(options);
+
+ DISABLE AUTOMATION CONTROLLED MESSAGE
+======================================
+You may see older examples such as:
+
+options.addArguments("--disable-blink-features=AutomationControlled");
+
+Be careful with such techniques.
+
+They are commonly discussed for changing browser automation fingerprints, but they should not be treated as a standard Selenium testing requirement.
+
+For normal QA automation, focus on:
+
+stable locators
+
+waits
+
+browser configuration
+
+test isolation
+
+reliable environments
+
+ADD EXTENSION
+================
+options.addExtensions(
+
+        new File("extension.crx")
+
+);
+
+Useful when a test environment requires a browser extension.
+
+ACCEPT INSECURE CERTIFICATES
+==============================
+options.setAcceptInsecureCerts(true);
+
+Useful in controlled test environments.
+
+ChromeOptions – Real-Time Example
+==================================
+ChromeOptions options = new ChromeOptions();
+
+ 
+
+options.addArguments("--headless=new");
+
+options.addArguments("--window-size=1920,1080"); // start-maximized
+
+options.addArguments("--disable-notifications");
+
+ 
+
+options.setAcceptInsecureCerts(true);
+
+ 
+
+WebDriver driver = new ChromeDriver(options);
+
+ 
+
+BROKEN LINKS
+================
+What is a broken link?
+
+A link is considered broken when clicking/accessing it produces an unsuccessful HTTP response.
+
+Common status codes:
+
+200 → OK
+
+301 → Permanent redirect
+
+302 → Temporary redirect
+
+400 → Bad request
+
+401 → Unauthorized
+
+403 → Forbidden
+
+404 → Not Found
+
+500 → Internal Server Error
+
+Do not simply classify every non-200 status as "broken" without understanding redirects and the application contract.
+
+How to find links?
+===================
+HTML:
+
+<a href="https://example.com">Example</a>
+
+Selenium:
+
+List<WebElement> links =
+
+        driver.findElements(By.tagName("a"));
+
+Get href
+===========
+String url = link.getAttribute("href");
+
+Important:
+
+Some <a> elements may have:
+
+<a href="">Click</a>
+
+or
+
+<a>Click</a>
+
+So check for null/empty values.
+
+Broken Link Testing Approach
+============================
+General flow:
+
+Find all <a> elements
+
+       ↓
+
+Read href
+
+       ↓
+
+Ignore null/empty href
+
+       ↓
+
+Send HTTP request
+
+       ↓
+
+Read response status
+
+       ↓
+
+Classify result
+
+Example
+=========
+List<WebElement> elements = driver.findElements(By.tagName("a"));
+
+                                    System.out.println(elements.size());
+
+ 
+
+//                                  for(WebElement e:elements) {
+
+//                                                    System.out.println(e.getText());
+
+//                                  }
+
+ 
+
+                                    int validLink = 0, invalid = 0;
+
+ 
+
+                                    for (WebElement e : elements) {
+
+                                                      String attribute = e.getAttribute("href");
+
+                                                      System.out.println(attribute);
+
+ 
+
+                                                      try {
+
+                                                                        HttpURLConnection h = null;
+
+                                                                        URL url = new URL(attribute);
+
+                                                                        h = (HttpURLConnection) url.openConnection();
+
+                                                                        h.connect();
+
+                                                                        int responseCode = h.getResponseCode();
+
+ 
+
+                                                                        if (responseCode < 400) {
+
+                                                                                          validLink++;
+
+                                                                                          System.out.println(e.getText() + " ->  " + attribute + "  ->>>" + responseCode);
+
+                                                                        } else {
+
+                                                                                          invalid++;
+
+                                                                        }
+
+                                                      } catch (Exception e1) {
+
+                                                                        invalid++;
+
+                                                                        System.out.println("InValid Link");
+
+                                                      }
+
+                                    }
+
+ 
+
+                                    System.out.println(validLink + "   " + invalid);
+
+ 
+
+Better Broken-Link Validation
+=============================
+A practical validator should:
+
+Ignore empty hrefs
+
+Handle malformed URLs
+
+Handle redirects
+
+Handle HTTPS
+
+Handle connection failures
+
+Handle authentication requirements
+
+Consider 3xx responses
+
+Consider application-specific expected responses
+
+Example classification:
+
+if (statusCode >= 400) {
+
+    System.out.println("Broken: " + url);
+
+} else {
+
+    System.out.println("Valid: " + url);
+
+}
+
+For redirects:
+
+200 → successful
+
+301/302/307/308 → redirect, usually not automatically broken
+
+400+ → potentially broken
+
+Important Broken-Link Interview Question
+==========================================
+Question:
+
+Why not use Selenium to test whether a link is broken?
+
+Answer:
+
+Selenium is primarily designed for browser interaction.
+
+For HTTP-level validation, Java HTTP clients or API tools are usually more efficient because they can directly inspect HTTP responses without loading each URL in a browser.
+
+JAVASCRIPT EXECUTOR
+====================
+JavascriptExecutor allows Selenium to execute JavaScript in the browser context.
+
+Example:
+
+JavascriptExecutor js =
+
+        (JavascriptExecutor) driver;
+
+Execute JavaScript
+===================
+js.executeScript(
+
+        "alert('Hello Selenium');"
+
+);
+
+Get Page Title
+===============
+String title = (String) js.executeScript(
+
+        "return document.title;"
+
+);
+
+Get Current URL
+================
+String url = (String) js.executeScript(
+
+        "return window.location.href;"
+
+);
+
+Scroll Down
+=============
+js.executeScript(
+
+        "window.scrollBy(0,500);"
+
+);
+
+Scroll to Bottom
+=================
+js.executeScript(
+
+        "window.scrollTo(0, document.body.scrollHeight);"
+
+);
+
+Scroll to Top
+==============
+js.executeScript(
+
+        "window.scrollTo(0,0);"
+
+);
+
+Scroll Element Into View
+==========================
+WebElement element =
+
+        driver.findElement(By.id("footer"));
+
+ 
+
+js.executeScript(
+
+        "arguments[0].scrollIntoView(true);",
+
+        element
+
+);
+
+arguments[0] represents the WebElement passed into JavaScript.
+
+Click Using JavaScript
+======================
+js.executeScript(
+
+        "arguments[0].click();",
+
+        element
+
+);
+
+Important warning
+
+Do not use JavaScript click as your first solution.
+
+Prefer:
+
+element.click();
+
+If normal clicking fails because of a legitimate browser/UI interaction issue, investigate:
+
+element visibility
+
+overlays
+
+animations
+
+scrolling
+
+waits
+
+iframe
+
+incorrect locator
+
+Only then consider JS.
+
+Enter Text Using JavaScript
+============================
+js.executeScript(
+
+        "arguments[0].value='admin';",
+
+        element
+
+);
+
+But this can bypass normal browser interaction and application event behavior.
+
+Prefer:
+
+element.sendKeys("admin");
+
+for normal test automation.
+
+Highlight an Element
+=====================
+Useful for debugging:
+
+js.executeScript(
+
+    "arguments[0].style.border='3px solid red';",
+
+    element
+
+);
+
+Change Background
+=================
+js.executeScript(
+
+    "arguments[0].style.backgroundColor='yellow';",
+
+    element
+
+);
+
+Again, mainly useful for debugging.
+
+Get Element Attribute Through JS
+=================================
+String value = (String) js.executeScript(
+
+        "return arguments[0].value;",
+
+        element
+
+);
+
+ Return Document Ready State
+=============================
+Very useful for understanding page loading:
+
+String state = (String) js.executeScript(
+
+        "return document.readyState;"
+
+);
+
+ 
+
+System.out.println(state);
+
+Possible values:
+
+loading
+
+interactive
+
+complete
+
+But remember:
+
+document.readyState == "complete" does not guarantee that every AJAX/API-driven UI component is ready.
+
+That is why condition-based waits are still important.
+
+JavaScriptExecutor – Real-Time Example
+=======================================
+JavascriptExecutor js =
+
+        (JavascriptExecutor) driver;
+
+ 
+
+WebElement button =
+
+        driver.findElement(By.id("submit"));
+
+ 
+
+js.executeScript(
+
+        "arguments[0].scrollIntoView({block:'center'});",
+
+        button
+
+);
+
+ 
+
+button.click();
+
+This is preferable to immediately forcing a JS click because the actual interaction remains a normal Selenium click.
+
+-------------------------------------------------------------------------------------------------------------------------
+
+ChromeOption & JSE Code
+========================
+package demo;
+
+import org.jspecify.annotations.Nullable;
+
+import org.openqa.selenium.Alert;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.JavascriptExecutor;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.chrome.ChromeOptions;
+
+public class TestAutomation2 {
+
+public static void main(String[] args) {
+
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+String state = (String) jse.executeScript("return document.readyState;");
+
+System.out.println(state);
+
+jse.executeScript("alert('Wednesday');");
+
+Alert a = driver.switchTo().alert();
+
+a.accept();
+
+state = (String) jse.executeScript("return document.readyState;");
+
+System.out.println(state);
+
+System.out.println(jse.executeScript("return document.title"));
+
+state = (String) jse.executeScript("return document.readyState;");
+
+System.out.println(state);
+
+}
+
+public void Tuesday() {
+
+ChromeOptions c = new ChromeOptions();
+
+// c.addArguments("headless");
+
+// c.addArguments("--window-size=100,100");
+
+c.addArguments("incognito");
+
+WebDriver driver = new ChromeDriver(c);
+
+System.out.println(c.getBrowserName());
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+// driver.manage().window().maximize();
+
+JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+WebElement element = driver.findElement(By.cssSelector(".form-control"));
+
+jse.executeScript("arguments[0].value='tp';", element);
+
+jse.executeScript("arguments[0].style.backgroundColor='red';", element);
+
+driver.findElement(By.id("email")).sendKeys("techpanda@gmail.com");
+
+driver.findElement(By.id("phone")).sendKeys("987654321");
+
+WebElement element2 = driver.findElement(By.tagName("textarea"));
+
+element2.sendKeys("chennai");
+
+WebElement element3 = driver.findElement(By.name("gender"));
+
+// element3.click();
+
+jse.executeScript("arguments[0].click();", element3);
+
+jse.executeScript("window.scrollBy(0,2000)");
+
+// element.clear();
+
+// element.sendKeys("Techpanda");
+
+// System.out.println(element.getCssValue("color"));
+
+// System.out.println(element.getCssValue("background-color"));
+
+// System.out.println(element2.getTagName());
+
+// System.out.println(element2.getLocation());
+
+// System.out.println(element.getSize());
+
+// System.out.println(element.isDisplayed());
+
+//
+
+// System.out.println(element3.isSelected());
+
+System.out.println(driver.getCurrentUrl() + " " + driver.getTitle());
+
+driver.quit();
+
+}
+
+}
+
