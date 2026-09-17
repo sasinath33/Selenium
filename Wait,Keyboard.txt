@@ -1,0 +1,153 @@
+Waits and keyboard
+===================
+package demo;
+
+import java.awt.AWTException;
+
+import java.awt.Robot;
+
+import java.awt.event.KeyEvent;
+
+import java.io.IOException;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.Keys;
+
+import org.openqa.selenium.WebDriver;
+
+import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.interactions.Actions;
+
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class WaitsDemo {
+
+public static void main(String[] args) throws IOException, AWTException {
+
+// TODO Auto-generated method stub
+
+WebDriver driver = new ChromeDriver();
+
+driver.manage().window().maximize();
+
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+
+driver.get("https://testautomationpractice.blogspot.com/");
+
+WebElement element = driver.findElement(By.id("name"));
+
+element.sendKeys("tech");
+
+// element.sendKeys(Keys.TAB);
+
+
+Actions act=new Actions(driver);
+
+act.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).
+
+keyDown(Keys.CONTROL).sendKeys("c").keyUp(Keys.CONTROL).
+
+keyDown(Keys.TAB).keyUp(Keys.TAB).
+
+keyDown(Keys.CONTROL).sendKeys("v").keyUp(Keys.CONTROL).
+
+keyDown(Keys.TAB).keyUp(Keys.TAB).sendKeys("1234567890").
+
+keyDown(Keys.TAB).keyUp(Keys.TAB).sendKeys("chennai").
+
+build().perform();
+
+
+act.contextClick().build().perform();
+
+
+Robot r=new Robot();
+
+
+for(int i=0;i<3;i++) {
+
+r.keyPress(KeyEvent.VK_DOWN);
+
+r.keyRelease(KeyEvent.VK_DOWN);
+
+}
+
+r.keyPress(KeyEvent.VK_ENTER);
+
+r.keyRelease(KeyEvent.VK_ENTER);
+
+
+// act.contextClick().keyDown(Keys.ARROW_DOWN).keyDown(Keys.ARROW_DOWN).keyDown(Keys.ARROW_DOWN).keyUp(Keys.ARROW_DOWN).build().perform();
+
+
+// letcode(driver);
+
+// hyrTutorial(driver);
+
+//WaitsDemo.alertDemo(driver);
+
+}
+
+public static void letcode(WebDriver driver) {
+
+driver.get("https://letcode.in/waits");
+
+driver.findElement(By.id("accept")).click();
+
+// Alert a = driver.switchTo().alert();
+
+// a.accept();
+
+WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+w.until(ExpectedConditions.alertIsPresent()).accept();
+
+}
+
+public static void hyrTutorial(WebDriver driver) {
+
+driver.get("https://www.hyrtutorials.com/p/waits-demo.html");
+
+driver.findElement(By.id("btn1")).click();
+
+By element = By.id("txt1");
+
+WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+w.until(ExpectedConditions.visibilityOfElementLocated(element)).sendKeys("techpanda");
+
+}
+
+public static void alertDemo(WebDriver driver) {
+
+driver.get("https://letcode.in/alert");
+
+// WebElement element = driver.findElement(By.id("modern"));
+
+By element = By.id("modern");
+
+WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+w.until(ExpectedConditions.visibilityOfElementLocated(element)).click();
+
+driver.findElement(By.xpath("//button[@aria-label=\"close\"]")).click();
+
+boolean a = w.until(ExpectedConditions.titleContains("LetCode")).booleanValue();
+
+boolean b = w.until(ExpectedConditions.urlToBe("https://leode.in/alert"));
+
+System.out.println(a + " " + b);
+
+}
+
+}
+
