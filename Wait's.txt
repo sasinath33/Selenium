@@ -1,0 +1,820 @@
+1. WAITS IN SELENIUM 
+1.1 Why do we need waits? 
+Web applications are dynamic. 
+When you click a button, the next element may not appear immediately. 
+For example: 
+Click Login 
+    ↓ 
+API request 
+    ↓ 
+Server response 
+    ↓ 
+Page updates 
+    ↓ 
+Dashboard element appears 
+If Selenium immediately searches for the dashboard element, it may fail with: 
+NoSuchElementException 
+ElementNotInteractableException 
+ElementClickInterceptedException 
+StaleElementReferenceException 
+Waits tell Selenium: 
+"Don't continue immediately. Wait until the required condition is satisfied." 
+ 
+2. TYPES OF WAITS 
+Selenium mainly provides: 
+1.Implicit Wait 
+2.Explicit Wait 
+3.Fluent Wait 
+There was also a traditional Thread.sleep(), but it is not a Selenium wait and should generally be avoided in automation 
+frameworks. 
+ 
+3. IMPLICIT WAIT 
+Definition 
+Implicit wait tells WebDriver to wait for a specified amount of time when trying to locate an element. 
+Syntax 
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); 
+Example: 
+WebDriver driver = new ChromeDriver(); 
+  
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); 
+  
+driver.get("https://example.com"); 
+  
+driver.findElement(By.id("username")).sendKeys("admin"); 
+If Selenium cannot immediately find the element, it keeps checking until: 
+•element is found, or 
+•timeout expires. 
+ 
+How implicit wait works 
+Suppose: 
+implicitlyWait(Duration.ofSeconds(10)); 
+And the element appears after 4 seconds. 
+Selenium approximately behaves like: 
+0 sec → element not found 
+1 sec → element not found 
+2 sec → element not found 
+3 sec → element not found 
+4 sec → element found 
+It does not necessarily sleep for the complete 10 seconds. 
+ 
+Important methods 
+Set implicit wait 
+driver.manage() 
+      .timeouts() 
+      .implicitlyWait(Duration.ofSeconds(10)); 
+Reset it 
+Depending on Selenium version/API usage, configure it appropriately rather than relying on a "zero" reset in framework code. 
+ 
+Advantages 
+•Very simple. 
+•Applies globally to element searches. 
+•Reduces some NoSuchElementException failures. 
+Disadvantages 
+•Cannot wait for specific conditions. 
+•Not suitable for complex dynamic applications. 
+•Can make debugging slower. 
+•Mixing it with explicit waits can produce confusing timeout behavior. 
+Fresher rule 
+Use implicit wait only when you understand the project-wide consequences. 
+ 
+4. EXPLICIT WAIT 
+Explicit wait is much more powerful. 
+It tells Selenium: 
+"Wait until this specific condition becomes true." 
+Class: 
+WebDriverWait 
+Example: 
+WebDriverWait wait = 
+        new WebDriverWait(driver, Duration.ofSeconds(10)); 
+  
+WebElement element = 
+        wait.until(ExpectedConditions.visibilityOfElementLocated( 
+                By.id("username"))); 
+Then: 
+element.sendKeys("admin"); 
+ 
+5. EXPECTEDCONDITIONS 
+ExpectedConditions contains many commonly used conditions. 
+Important methods: 
+visibilityOfElementLocated() 
+elementToBeClickable() 
+presenceOfElementLocated() 
+presenceOfAllElementsLocatedBy() 
+invisibilityOfElementLocated() 
+textToBePresentInElementLocated() 
+titleContains() 
+titleIs() 
+urlContains() 
+urlToBe() 
+alertIsPresent() 
+frameToBeAvailableAndSwitchToIt() 
+elementToBeSelected() 
+stalenessOf() 
+ 
+6. presenceOfElementLocated() 
+Checks whether the element exists in the DOM. 
+WebElement username = 
+        wait.until(ExpectedConditions.presenceOfElementLocated( 
+                By.id("username"))); 
+Important: 
+Presence does NOT mean visible. 
+The element can exist in HTML but still be hidden. 
+ 
+7. visibilityOfElementLocated() 
+Checks that the element exists and is visible. 
+WebElement username = 
+        wait.until(ExpectedConditions.visibilityOfElementLocated( 
+                By.id("username"))); 
+Use when you need to interact with a visible element. 
+ 
+8. elementToBeClickable() 
+Checks whether an element is visible and enabled enough for clicking. 
+wait.until(ExpectedConditions.elementToBeClickable( 
+        By.id("login"))).click(); 
+Very common in real automation projects. 
+ 
+9. invisibilityOfElementLocated() 
+Useful for loaders/spinners. 
+Example: 
+wait.until(ExpectedConditions.invisibilityOfElementLocated( 
+        By.id("loader"))); 
+Real-world flow: 
+Click Submit 
+      ↓ 
+Loader appears 
+      ↓ 
+API processing 
+      ↓ 
+Loader disappears 
+      ↓ 
+Next element becomes available 
+ 
+10. textToBePresentInElementLocated() 
+wait.until(ExpectedConditions.textToBePresentInElementLocated( 
+        By.id("message"), 
+        "Success")); 
+Useful when UI text changes dynamically. 
+ 
+11. titleIs() 
+wait.until(ExpectedConditions.titleIs("Dashboard")); 
+ 
+12. titleContains() 
+wait.until(ExpectedConditions.titleContains("Dashboard")); 
+ 
+13. urlContains() 
+wait.until(ExpectedConditions.urlContains("/dashboard")); 
+ 
+14. urlToBe() 
+wait.until(ExpectedConditions.urlToBe( 
+        "https://example.com/dashboard")); 
+ 
+15. alertIsPresent() 
+Alert alert = wait.until( 
+        ExpectedConditions.alertIsPresent()); 
+  
+alert.accept(); 
+ 
+16. frameToBeAvailableAndSwitchToIt() 
+wait.until( 
+    ExpectedConditions.frameToBeAvailableAndSwitchToIt("paymentFrame") 
+); 
+This is extremely useful for iframe-based applications. 
+ 
+17. stalenessOf() 
+A stale element means Selenium previously found an element, but the DOM has changed and that old reference is no longer 
+valid. 
+Example: 
+WebElement element = driver.findElement(By.id("username")); 
+  
+driver.navigate().refresh(); 
+  
+wait.until(ExpectedConditions.stalenessOf(element)); 
+ 
+18. FLUENT WAIT 
+FluentWait provides more control. 
+You can configure: 
+•Maximum timeout 
+•Polling interval 
+•Exceptions to ignore 
+Example: 
+Wait<WebDriver> wait = new FluentWait<>(driver) 
+        .withTimeout(Duration.ofSeconds(30)) 
+        .pollingEvery(Duration.ofSeconds(2)) 
+        .ignoring(NoSuchElementException.class); 
+  
+  
+  
+WebElement element = wait.until( 
+        d -> d.findElement(By.id("username")) 
+); 
+ 
+19. What is polling? 
+Polling means: 
+How frequently Selenium should check the condition. 
+Example: 
+pollingEvery(Duration.ofSeconds(2)) 
+Means approximately: 
+0 sec → check 
+2 sec → check 
+4 sec → check 
+6 sec → check 
+... 
+until timeout or success. 
+ 
+20. IMPLICIT vs EXPLICIT vs FLUENT 
+Wait 
+Scope 
+Condition 
+Control 
+Implicit 
+Global 
+Element search 
+Low 
+Explicit 
+Specific operation 
+High 
+High 
+Fluent 
+Specific operation 
+High 
+Very High 
+Recommended approach 
+For modern frameworks: 
+Explicit Wait 
+     ↓ 
+Best default choice 
+Use FluentWait when you need custom polling/ignored exceptions. 
+ 
+21. Thread.sleep() 
+Example: 
+Thread.sleep(5000); 
+This means: 
+Always wait 5 seconds. 
+Problem: 
+If element appears after 1 second: 
+1 sec → element ready 
+2 sec → doing nothing 
+3 sec → doing nothing 
+4 sec → doing nothing 
+5 sec → continue 
+It wastes time. 
+If element appears after 7 seconds: 
+5 sec → continue 
+7 sec → element ready 
+Automation fails. 
+Therefore: 
+Prefer condition-based waits over fixed sleeps. 
+ 
+22. CHROMEOPTIONS 
+ChromeOptions allows you to configure Chrome before starting the browser. 
+Import: 
+import org.openqa.selenium.chrome.ChromeOptions; 
+Basic example: 
+ChromeOptions options = new ChromeOptions(); 
+  
+WebDriver driver = new ChromeDriver(options); 
+ 
+23. Why use ChromeOptions? 
+ChromeOptions can configure: 
+•Headless execution 
+•Browser arguments 
+•Extensions 
+•Downloads 
+•Notifications 
+•Certificate handling 
+•Window behavior 
+•Experimental options 
+•Browser capabilities 
+ 
+24. HEADLESS MODE 
+Headless means Chrome runs without displaying the browser UI. 
+ChromeOptions options = new ChromeOptions(); 
+  
+options.addArguments("--headless=new"); 
+  
+WebDriver driver = new ChromeDriver(options); 
+Useful for: 
+•CI/CD 
+•Jenkins 
+•Docker 
+•GitHub Actions 
+•Server environments 
+ 
+25. WINDOW SIZE 
+options.addArguments("--window-size=1920,1080"); 
+Useful in headless execution because viewport dimensions can affect responsive layouts. 
+ 
+26. START MAXIMIZED 
+options.addArguments("--start-maximized"); 
+However, for reliable cross-environment tests, explicitly controlling the viewport/window size can be more predictable. 
+ 
+27. DISABLE NOTIFICATIONS 
+options.addArguments("--disable-notifications"); 
+Useful when browser notification popups interfere with tests. 
+ 
+28. INCOGNITO 
+options.addArguments("--incognito"); 
+Starts Chrome in incognito mode. 
+ 
+29. IGNORE CERTIFICATE ERRORS 
+options.addArguments("--ignore-certificate-errors"); 
+Can be useful in controlled test environments with test certificates. 
+Do not blindly use this in security-sensitive production validation. 
+ 
+30. DOWNLOAD PREFERENCES 
+You can configure Chrome preferences. 
+Example: 
+Map<String, Object> map = new HashMap<>(); 
+  
+map.put("download.default_directory", 
+        "C:\\Downloads"); 
+  
+options.setExperimentalOption("prefs", map); 
+Another example: 
+prefs.put("download.prompt_for_download", false); 
+Complete: 
+ChromeOptions options = new ChromeOptions(); 
+  
+Map<String, Object> prefs = new HashMap<>(); 
+  
+prefs.put("download.default_directory", 
+        "C:\\Downloads"); 
+  
+prefs.put("download.prompt_for_download", false); 
+  
+options.setExperimentalOption("prefs", prefs); 
+  
+WebDriver driver = new ChromeDriver(options); 
+ 
+31. DISABLE AUTOMATION CONTROLLED 
+MESSAGE 
+You may see older examples such as: 
+options.addArguments("--disable-blink-features=AutomationControlled"); 
+Be careful with such techniques. 
+They are commonly discussed for changing browser automation fingerprints, but they should not be treated as a standard 
+Selenium testing requirement. 
+For normal QA automation, focus on: 
+•stable locators 
+•waits 
+•browser configuration 
+•test isolation 
+•reliable environments 
+ 
+32. ADD EXTENSION 
+options.addExtensions( 
+        new File("extension.crx") 
+); 
+Useful when a test environment requires a browser extension. 
+ 
+33. ACCEPT INSECURE CERTIFICATES 
+options.setAcceptInsecureCerts(true); 
+Useful in controlled test environments. 
+ 
+34. ChromeOptions – Real-Time Example 
+ChromeOptions options = new ChromeOptions(); 
+  
+options.addArguments("--headless=new"); 
+options.addArguments("--window-size=1920,1080"); // start-maximized 
+options.addArguments("--disable-notifications"); 
+  
+options.setAcceptInsecureCerts(true); 
+  
+WebDriver driver = new ChromeDriver(options); 
+ 
+35. BROKEN LINKS 
+What is a broken link? 
+A link is considered broken when clicking/accessing it produces an unsuccessful HTTP response. 
+Common status codes: 
+200 → OK 
+301 → Permanent redirect 
+302 → Temporary redirect 
+400 → Bad request 
+401 → Unauthorized 
+403 → Forbidden 
+404 → Not Found 
+500 → Internal Server Error 
+Do not simply classify every non-200 status as "broken" without understanding redirects and the application contract. 
+ 
+36. How to find links? 
+HTML: 
+<a href="https://example.com">Example</a> 
+Selenium: 
+List<WebElement> links = 
+        driver.findElements(By.tagName("a")); 
+ 
+37. Get href 
+String url = link.getAttribute("href"); 
+Important: 
+Some <a> elements may have: 
+<a href="">Click</a> 
+or 
+<a>Click</a> 
+So check for null/empty values. 
+ 
+38. Broken Link Testing Approach 
+General flow: 
+Find all <a> elements 
+       ↓ 
+Read href 
+       ↓ 
+Ignore null/empty href 
+       ↓ 
+Send HTTP request 
+       ↓ 
+Read response status 
+       ↓ 
+Classify result 
+ 
+39. Example 
+List<WebElement> elements = driver.findElements(By.tagName("a")); 
+                                    System.out.println(elements.size()); 
+  
+//                                  for(WebElement e:elements) { 
+//                                                    System.out.println(e.getText()); 
+//                                  } 
+  
+                                    int validLink = 0, invalid = 0; 
+  
+                                    for (WebElement e : elements) { 
+                                                      String attribute = e.getAttribute("href"); 
+                                                      System.out.println(attribute); 
+  
+                                                      try { 
+                                                                        HttpURLConnection h = null; 
+                                                                        URL url = new URL(attribute); 
+                                                                        h = (HttpURLConnection) url.openConnection(); 
+                                                                        h.connect(); 
+                                                                        int responseCode = h.getResponseCode(); 
+  
+                                                                        if (responseCode < 400) { 
+                                                                                          validLink++; 
+                                                                                          System.out.println(e.getText() + " ->  " + attribute + "  ->>>" + responseCode); 
+                                                                        } else { 
+                                                                                          invalid++; 
+                                                                        } 
+                                                      } catch (Exception e1) { 
+                                                                        invalid++; 
+                                                                        System.out.println("InValid Link"); 
+                                                      } 
+                                    } 
+  
+                                    System.out.println(validLink + "   " + invalid); 
+  
+ 
+40. Better Broken-Link Validation 
+A practical validator should: 
+•Ignore empty hrefs 
+•Handle malformed URLs 
+•Handle redirects 
+•Handle HTTPS 
+•Handle connection failures 
+•Handle authentication requirements 
+•Consider 3xx responses 
+•Consider application-specific expected responses 
+Example classification: 
+if (statusCode >= 400) { 
+    System.out.println("Broken: " + url); 
+} else { 
+    System.out.println("Valid: " + url); 
+} 
+For redirects: 
+200 → successful 
+301/302/307/308 → redirect, usually not automatically broken 
+400+ → potentially broken 
+ 
+41. Important Broken-Link Interview Question 
+Question: 
+Why not use Selenium to test whether a link is broken? 
+Answer: 
+Selenium is primarily designed for browser interaction. 
+For HTTP-level validation, Java HTTP clients or API tools are usually more efficient because they can directly inspect HTTP 
+responses without loading each URL in a browser. 
+ 
+42. KEYBOARD ACTIONS 
+Selenium provides keyboard interaction through: 
+Actions 
+and: 
+Keys 
+ 
+43. Keys CLASS 
+Import: 
+import org.openqa.selenium.Keys; 
+Common keys: 
+Keys.ENTER 
+Keys.TAB 
+Keys.ESCAPE 
+Keys.SPACE 
+Keys.BACK_SPACE 
+Keys.DELETE 
+Keys.ARROW_UP 
+Keys.ARROW_DOWN 
+Keys.ARROW_LEFT 
+Keys.ARROW_RIGHT 
+Keys.HOME 
+Keys.END 
+Keys.PAGE_UP 
+Keys.PAGE_DOWN 
+Keys.SHIFT 
+Keys.CONTROL 
+Keys.ALT 
+ 
+44. ENTER 
+driver.findElement(By.id("search")) 
+      .sendKeys(Keys.ENTER); 
+ 
+45. TAB 
+element.sendKeys(Keys.TAB); 
+Useful for keyboard navigation. 
+ 
+46. CTRL + A 
+element.sendKeys(Keys.CONTROL, "a"); 
+On macOS, modifier behavior differs, so use the appropriate platform modifier where needed. 
+ 
+47. CTRL + C 
+element.sendKeys(Keys.CONTROL, "c"); 
+ 
+48. CTRL + V 
+element.sendKeys(Keys.CONTROL, "v"); 
+ 
+49. Using Actions Class 
+Create: 
+Actions actions = new Actions(driver); 
+Example: 
+actions 
+    .keyDown(Keys.CONTROL) 
+    .sendKeys("a") 
+    .keyUp(Keys.CONTROL) 
+    .perform(); 
+ 
+50. Keyboard Sequence 
+actions 
+    .sendKeys(Keys.TAB) 
+    .sendKeys(Keys.TAB) 
+    .sendKeys(Keys.ENTER) 
+    .perform(); 
+ 
+51. Key Down / Key Up 
+actions.keyDown(Keys.SHIFT) 
+       .sendKeys("hello") 
+       .keyUp(Keys.SHIFT) 
+       .perform(); 
+ 
+52. Copy/Paste Example 
+Actions actions = new Actions(driver); 
+  
+actions.keyDown(Keys.CONTROL) 
+       .sendKeys("a") 
+       .keyUp(Keys.CONTROL) 
+       .keyDown(Keys.CONTROL) 
+       .sendKeys("c") 
+       .keyUp(Keys.CONTROL) 
+       .perform(); 
+  
+  
+       act.keyDown(Keys.CONTROL).sendKeys("a").sendKeys("c").keyUp(Keys.CONTROL). 
+              sendKeys(Keys.TAB).keyDown(Keys.CONTROL).sendKeys("v").keyUp(Keys.CONTROL).                    
+             build().perform(); 
+  
+ 
+53. When to use sendKeys() vs Actions? 
+sendKeys() 
+Use when sending text or a simple key directly to an element: 
+element.sendKeys("Selenium"); 
+element.sendKeys(Keys.ENTER); 
+Actions 
+Use for complex user interactions: 
+Keyboard combinations 
+Mouse + keyboard 
+Drag and drop 
+Hover 
+Click-and-hold 
+Multiple actions 
+ 
+54. JAVASCRIPT EXECUTOR 
+JavascriptExecutor allows Selenium to execute JavaScript in the browser context. 
+Example: 
+JavascriptExecutor js = 
+        (JavascriptExecutor) driver; 
+ 
+55. Execute JavaScript 
+js.executeScript( 
+        "alert('Hello Selenium');" 
+); 
+ 
+56. Get Page Title 
+String title = (String) js.executeScript( 
+        "return document.title;" 
+); 
+ 
+57. Get Current URL 
+String url = (String) js.executeScript( 
+        "return window.location.href;" 
+); 
+ 
+58. Scroll Down 
+js.executeScript( 
+        "window.scrollBy(0,500);" 
+); 
+ 
+59. Scroll to Bottom 
+js.executeScript( 
+        "window.scrollTo(0, document.body.scrollHeight);" 
+); 
+ 
+60. Scroll to Top 
+js.executeScript( 
+        "window.scrollTo(0,0);" 
+); 
+ 
+61. Scroll Element Into View 
+WebElement element = 
+        driver.findElement(By.id("footer")); 
+  
+js.executeScript( 
+        "arguments[0].scrollIntoView(true);", 
+        element 
+); 
+arguments[0] represents the WebElement passed into JavaScript. 
+ 
+62. Click Using JavaScript 
+js.executeScript( 
+        "arguments[0].click();", 
+        element 
+); 
+Important warning 
+Do not use JavaScript click as your first solution. 
+Prefer: 
+element.click(); 
+If normal clicking fails because of a legitimate browser/UI interaction issue, investigate: 
+•element visibility 
+•overlays 
+•animations 
+•scrolling 
+•waits 
+•iframe 
+•incorrect locator 
+Only then consider JS. 
+ 
+63. Enter Text Using JavaScript 
+js.executeScript( 
+        "arguments[0].value='admin';", 
+        element 
+); 
+But this can bypass normal browser interaction and application event behavior. 
+Prefer: 
+element.sendKeys("admin"); 
+for normal test automation. 
+ 
+64. Highlight an Element 
+Useful for debugging: 
+js.executeScript( 
+    "arguments[0].style.border='3px solid red';", 
+    element 
+); 
+ 
+65. Change Background 
+js.executeScript( 
+    "arguments[0].style.backgroundColor='yellow';", 
+    element 
+); 
+Again, mainly useful for debugging. 
+ 
+66. Get Element Attribute Through JS 
+String value = (String) js.executeScript( 
+        "return arguments[0].value;", 
+        element 
+); 
+ 
+67. Return Document Ready State 
+Very useful for understanding page loading: 
+String state = (String) js.executeScript( 
+        "return document.readyState;" 
+); 
+  
+System.out.println(state); 
+Possible values: 
+loading 
+interactive 
+complete 
+But remember: 
+document.readyState == "complete" does not guarantee that every AJAX/API-driven UI component is ready. 
+That is why condition-based waits are still important. 
+ 
+68. JavaScriptExecutor – Real-Time Example 
+JavascriptExecutor js = 
+        (JavascriptExecutor) driver; 
+  
+WebElement button = 
+        driver.findElement(By.id("submit")); 
+  
+js.executeScript( 
+        "arguments[0].scrollIntoView({block:'center'});", 
+        button 
+); 
+  
+button.click(); 
+This is preferable to immediately forcing a JS click because the actual interaction remains a normal Selenium click. 
+ 
+69. COMBINING WAITS + CHROMEOPTIONS + JS 
+A realistic test: 
+ChromeOptions options = new ChromeOptions(); 
+  
+options.addArguments("--window-size=1920,1080"); 
+options.addArguments("--disable-notifications"); 
+  
+WebDriver driver = new ChromeDriver(options); 
+  
+WebDriverWait wait = 
+        new WebDriverWait(driver, Duration.ofSeconds(15)); 
+  
+JavascriptExecutor js = 
+        (JavascriptExecutor) driver; 
+  
+driver.get("https://example.com"); 
+  
+WebElement login = 
+        wait.until( 
+            ExpectedConditions.visibilityOfElementLocated( 
+                By.id("login") 
+            ) 
+        ); 
+  
+js.executeScript( 
+        "arguments[0].scrollIntoView({block:'center'});", 
+        login 
+); 
+  
+login.click(); 
+ 
+  
+70. COMMON SELENIUM EXCEPTIONS 
+NoSuchElementException 
+Element cannot be found. 
+Possible reasons: 
+•Wrong locator 
+•Element not loaded 
+•Wrong page 
+•Wrong iframe 
+•Dynamic DOM 
+ 
+TimeoutException 
+Explicit wait condition did not become true within timeout. 
+Example: 
+wait.until( 
+    ExpectedConditions.visibilityOfElementLocated( 
+        By.id("username") 
+    ) 
+); 
+ 
+ElementNotInteractableException 
+Element exists but cannot currently be interacted with. 
+ 
+ElementClickInterceptedException 
+Another element is blocking the click. 
+Common causes: 
+Popup 
+Overlay 
+Cookie banner 
+Loader 
+Sticky header 
+ 
+StaleElementReferenceException 
+DOM changed and the old WebElement reference is no longer valid. 
+Solution: 
+Re-locate the element when appropriate rather than repeatedly using the stale reference. 
+ 
+71. BEST WAIT STRATEGY 
+A good framework often uses: 
+public class WaitUtils { 
+  
+    private WebDriver driver; 
+    private WebDriverWait wait; 
+  
+    public WaitUtils(WebDriver driver) { 
+        this.driver = driver; 
+        this.wait = 
+            new WebDriverWait(driver, 
+                    Duration.ofSeconds(15)); 
+    } 
+  
+    public WebElement waitForVisible(By locator) { 
+        return wait.until( 
+            ExpectedConditions.visibilityOfElementLocated(locator) 
+        ); 
+    } 
+  
+    public WebElement waitForClickable(By locator) { 
+        return wait.until( 
+            ExpectedConditions.elementToBeClickable(locator) 
+        ); 
+    } 
+  
+    public boolean waitForInvisible(By locator) { 
+        return wait.until( 
+            ExpectedConditions.invisibilityOfElementLocated(locator) 
+        ); 
+    } 
+} 
+Then Page Objects can use: 
+waitUtils.waitForClickable(loginButton).click(); 
+This reduces duplicated waiting logic. 
